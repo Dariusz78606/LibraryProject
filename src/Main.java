@@ -1,5 +1,11 @@
+import utils.InputOutput;
+import view.LibraryView;
+
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Początek pracy!");
+        LibraryView libraryView = LibraryView.getInstance();
+
+        libraryView.mainMenu();
+        InputOutput.readLine("\nWcisnij cokolwiek, aby zakonczyc...");
     }
 }
