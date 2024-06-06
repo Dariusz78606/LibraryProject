@@ -9,7 +9,7 @@ public class Main {
         LibraryView libraryView = LibraryView.getInstance();
 
         Books.getStartupBooks().stream()
-                .forEach(book -> library.addBook(book));
+                .forEach(library::addBook);
 
         libraryView.mainMenu();
         InputOutput.readLine("\nWcisnij cokolwiek, aby zakonczyc...");

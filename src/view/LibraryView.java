@@ -73,7 +73,7 @@ public class LibraryView {
 
         InputOutput.printMoreLines(BLANKLINES);
         System.out.println("\n\t" + message + "\n");
-        for (Book book:controller.getAllBooks()) {
+        for (Book book:books) {
             System.out.println("\t\t" + book.getAuthor());
             System.out.println("\t\t\t" + book.getTitle());
             System.out.println("\t\t\t"+ InputOutput.getCountOfChars(book.getTitle().length(), '-') + "\n");
@@ -86,10 +86,10 @@ public class LibraryView {
         InputOutput.printMoreLines(BLANKLINES);
         Book result = controller.borrowBook(user, book);
         if (result != null) {
-            InputOutput.breakLine("\n\n\tKsiazka zostala wypozyczona\n\n", 60);
-            InputOutput.breakLine("\n\n\t\tUzytkownik: " + user.getUsername(), 60);
-            InputOutput.breakLine("\n\n\t\tTytul: " + book.getTitle(), 60);
-            InputOutput.breakLine("\n\n\t\tAutor ksiazki: " + book.getAuthor(), 60);
+            System.out.println(InputOutput.breakLine("Ksiazka zostala wypozyczona\n\n", 60));
+            System.out.println(InputOutput.breakLine("\n\nUzytkownik: " + user.getUsername(), 60, "\t\t"));
+            System.out.println(InputOutput.breakLine("\n\nTytul: " + book.getTitle(), 60, "\t\t"));
+            System.out.println(InputOutput.breakLine("\n\nAutor ksiazki: " + book.getAuthor(), 60, "\t\t"));
         } else {
             InputOutput.breakLine("\n\n\tWystapil jakis problem i ksiazka nie zostala wypozyczona", 60);
         }
