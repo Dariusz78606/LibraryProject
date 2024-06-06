@@ -134,7 +134,7 @@ public class LibraryView {
                 }
             }
         } else {
-            InputOutput.readLine("\n\nWystapil blad. Powrot do menu glownego");
+            InputOutput.readLine("\n\nWystapil blad. Powrot do menu glownego...");
         }
     }
 
