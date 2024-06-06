@@ -1,14 +1,21 @@
 package view;
 
 import additional.Banner;
-
+import controller.LibraryController;
+import model.Book;
+import model.Person;
+import model.User;
 import utils.InputOutput;
 
+import java.util.ArrayList;
+import java.util.List;
 
 public class LibraryView {
     private static LibraryView instance;
+    private LibraryController controller;
     private static final int BLANKLINES = 60;
     private LibraryView() {
+        this.controller = LibraryController.getInstance();
     }
 
     public static LibraryView getInstance() {
@@ -39,20 +46,113 @@ public class LibraryView {
                 case "q":
                     break mainMenuLoop;
                 case "1":
+                    showBooks(controller.getAllBooks(), "Lista wszystkich tytulow:");
                     break;
                 case "2":
+                    previewAllBooks(false);
                     break;
                 case "3":
+                    showBooks(controller.getAvailableBooks(), "Lista dostepnych tytulow:");
                     break;
                 case "4":
+                    previewAllBooks(true);
                 case "5":
                     break;
                 case "6":
+                    previewBorrowed();
                     break;
                 case "7":
                     break;
                 case "8":
                     break;
+            }
+        }
+    }
+
+    public void showBooks(List<Book> books, String message) {
+
+        InputOutput.printMoreLines(BLANKLINES);
+        System.out.println("\n\t" + message + "\n");
+        for (Book book:controller.getAllBooks()) {
+            System.out.println("\t\t" + book.getAuthor());
+            System.out.println("\t\t\t" + book.getTitle());
+            System.out.println("\t\t\t"+ InputOutput.getCountOfChars(book.getTitle().length(), '-') + "\n");
+        }
+        InputOutput.readLine("\n Wcisnij cokolwiek, aby wrocic do menu glownego...");
+    }
+
+
+    public void borrowBook(Book book, User user) {
+        InputOutput.printMoreLines(BLANKLINES);
+        Book result = controller.borrowBook(user, book);
+        if (result != null) {
+            InputOutput.breakLine("\n\n\tKsiazka zostala wypozyczona\n\n", 60);
+            InputOutput.breakLine("\n\n\t\tUzytkownik: " + user.getUsername(), 60);
+            InputOutput.breakLine("\n\n\t\tTytul: " + book.getTitle(), 60);
+            InputOutput.breakLine("\n\n\t\tAutor ksiazki: " + book.getAuthor(), 60);
+        } else {
+            InputOutput.breakLine("\n\n\tWystapil jakis problem i ksiazka nie zostala wypozyczona", 60);
+        }
+    }
+
+
+    public void previewBorrowed() {
+        InputOutput.printMoreLines(BLANKLINES);
+        if (controller.getBorrowedBooks().isEmpty()) {
+            System.out.println("Brak wypozyczonych ksiazek");
+            return;
+        }
+        System.out.println(InputOutput.breakLine("\nUzytkownicy i ich wypozyczone ksiazki" ,60, "\t\t"));
+        for (Person person: controller.getBorrowedBooks().keySet()) {
+            if (controller.getBorrowedBooks().getOrDefault(person, new ArrayList<>()).isEmpty()) {
+                continue;
+            }
+            System.out.println("\n\t\t" + person.getUsername() + "\n");
+            for (Book book: controller.getBorrowedBooks().getOrDefault(person, new ArrayList<>())) {
+                System.out.println(InputOutput.breakLine("Tytul: " + book.getTitle(), 60, "\t"));
+                System.out.println(InputOutput.breakLine("Autor: " + book.getAuthor(), 60, "\t"));
+                System.out.println("");
+            }
+        }
+        InputOutput.readLine("\nWcisnij enter by wrocic do menu glownego...");
+    }
+
+    public void previewAllBooks(boolean borrow) {
+        String choice;
+        String name;
+        User user = null;
+        InputOutput.printMoreLines(BLANKLINES);
+        System.out.println("\n\tPrzeglad wszystkich tytulow:\n");
+        mainLoop:
+        for (Book book:controller.getAllBooks()) {
+            InputOutput.printMoreLines(BLANKLINES);
+            book.displayInfo();
+            if (!borrow) {
+                choice = InputOutput.readLine(InputOutput.breakLine("\n\n\tJesli chcesz zakonczyc wpisz \"q\" oraz enter. W innym przypadku dowolny znak", 60, "\t"));
+                if (choice.toLowerCase().strip().equals("q")) {
+                    break;
+                }
+            } else {
+                choice = InputOutput.readLine(InputOutput.breakLine("\n\n\tJesli chcesz wypozyczyc wcisnij \"w\" oraz enter. Jesli chcesz zakonczyc wcisnij \"q\" oraz enter. W innym przypadku dowolny znak", 60, "\t"));
+                switch (choice) {
+                    case "q":
+                        break mainLoop;
+                    case "w":
+                        if (user == null) {
+                            name = InputOutput.readLine(InputOutput.breakLine("\n\n\tPodaj nazwe uzytkownika", 60, "\t"));
+                            if (!controller.isUser(name)) {
+                                user = new User(name);
+                            } else {
+                                user = controller.getUserByUsername(name);
+                            }
+                        }
+                        borrowBook(book, user);
+                        choice = InputOutput.readLine(InputOutput.breakLine("\n\n\tKontyunowac przegladanie? Jesli tak wcnisnij \"t\" oraz enter", 60, "\t"));
+                        if (!choice.toLowerCase().strip().equals("t")) {
+                            break mainLoop;
+                        }
+                        break;
+                }
             }
         }
     }
