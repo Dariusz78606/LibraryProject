@@ -8,7 +8,9 @@ import model.User;
 import utils.InputOutput;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class LibraryView {
     private static LibraryView instance;
@@ -41,7 +43,7 @@ public class LibraryView {
             System.out.println(InputOutput.breakLine("\t\t 7.\tOddaj ksiazke", LINE_LIMIT));
             System.out.println(InputOutput.breakLine("\t\t 8.\tUsun uzytkownika", LINE_LIMIT));
             System.out.println(InputOutput.breakLine("\n\t\t \"q\" aby zakonczyc", LINE_LIMIT));
-            String choice = InputOutput.readLine("\n\tTwoj wybor");
+            String choice = InputOutput.readLine("\n\tTwoj wybor: ");
             switch (choice.toLowerCase().strip()) {
                 case "q":
                     break mainMenuLoop;
@@ -62,6 +64,7 @@ public class LibraryView {
                     previewBorrowed();
                     break;
                 case "7":
+                    returnBook();
                     break;
                 case "8":
                     break;
@@ -95,6 +98,45 @@ public class LibraryView {
         }
     }
 
+    public void returnBook() {
+        Map<String, Book> booksMap = new HashMap<>();
+        InputOutput.printMoreLines(BLANKLINES);
+        if (controller.getBorrowedBooks().isEmpty()) {
+            InputOutput.readLine("\n\tBrak uzytkownikow...");
+            return;
+        }
+        System.out.println(InputOutput.breakLine("\nKtory uzytkownik ma oddac ksiazke(podaj pelna nazwe):\n" ,60, "\t"));
+        for (Person person: controller.getBorrowedBooks().keySet()) {
+            System.out.println(InputOutput.breakLine(person.getUsername() ,60, "\t\t"));
+        }
+        String choice = InputOutput.readLine("\nPodaj nazwe uzytkownika: ");
+        User user = controller.getUserByUsername(choice);
+        if (user != null && !controller.getBorrowedBooksByUser(user).isEmpty()) {
+            Integer counter = 1;
+            System.out.println("\tWypozyczone ksiazki:\n");
+            for (Book book: controller.getBorrowedBooksByUser(user)) {
+                System.out.println(counter);
+                System.out.println(InputOutput.breakLine(book.getAuthor(),60, "\t\t "));
+                System.out.println(InputOutput.breakLine(book.getTitle() + "\n",60, "\t\t"));
+                booksMap.put(counter.toString(), book);
+                counter++;
+            }
+            String bookChoice = InputOutput.readLine("\nKtora ksiazke oddac: ").strip();
+            if (!booksMap.containsKey(bookChoice)) {
+                InputOutput.readLine("\n\tNie ma takiej ksiazki... Powrot do menu glownego");
+            } else {
+                Book result = controller.returnBook(user, booksMap.get(bookChoice));
+                if (result != null) {
+                    InputOutput.readLine("Oddano pomyslnie");
+                }
+                else {
+                    InputOutput.readLine("Wystapil blad");
+                }
+            }
+        } else {
+            InputOutput.readLine("\n\nWystapil blad. Powrot do menu glownego");
+        }
+    }
 
     public void previewBorrowed() {
         InputOutput.printMoreLines(BLANKLINES);
@@ -121,33 +163,40 @@ public class LibraryView {
         String choice;
         String name;
         User user = null;
+        List<Book> books;
+        if (borrow) {
+            books = controller.getAvailableBooks();
+        } else {
+            books = controller.getAllBooks();
+        }
         InputOutput.printMoreLines(BLANKLINES);
         System.out.println("\n\tPrzeglad wszystkich tytulow:\n");
         mainLoop:
-        for (Book book:controller.getAllBooks()) {
+        for (Book book:books) {
             InputOutput.printMoreLines(BLANKLINES);
             book.displayInfo();
             if (!borrow) {
-                choice = InputOutput.readLine(InputOutput.breakLine("\n\n\tJesli chcesz zakonczyc wpisz \"q\" oraz enter. W innym przypadku dowolny znak", 60, "\t"));
+                choice = InputOutput.readLine(InputOutput.breakLine("\n\n\tJesli chcesz zakonczyc wpisz \"q\" oraz enter. W innym przypadku dowolny znak: ", 60, "\t"));
                 if (choice.toLowerCase().strip().equals("q")) {
                     break;
                 }
             } else {
-                choice = InputOutput.readLine(InputOutput.breakLine("\n\n\tJesli chcesz wypozyczyc wcisnij \"w\" oraz enter. Jesli chcesz zakonczyc wcisnij \"q\" oraz enter. W innym przypadku dowolny znak", 60, "\t"));
+                choice = InputOutput.readLine(InputOutput.breakLine("\n\n\tJesli chcesz wypozyczyc wcisnij \"w\" oraz enter. Jesli chcesz zakonczyc wcisnij \"q\" oraz enter. W innym przypadku dowolny znak: ", 60, "\t"));
                 switch (choice) {
                     case "q":
                         break mainLoop;
                     case "w":
                         if (user == null) {
-                            name = InputOutput.readLine(InputOutput.breakLine("\n\n\tPodaj nazwe uzytkownika", 60, "\t"));
+                            name = InputOutput.readLine(InputOutput.breakLine("\n\n\tPodaj nazwe uzytkownika: ", 60, "\t"));
                             if (!controller.isUser(name)) {
                                 user = new User(name);
+                                controller.addUser(user);
                             } else {
                                 user = controller.getUserByUsername(name);
                             }
                         }
                         borrowBook(book, user);
-                        choice = InputOutput.readLine(InputOutput.breakLine("\n\n\tKontyunowac przegladanie? Jesli tak wcnisnij \"t\" oraz enter", 60, "\t"));
+                        choice = InputOutput.readLine(InputOutput.breakLine("\n\n\tKontyunowac przegladanie? Jesli tak wcnisnij \"t\" oraz enter: ", 60, "\t"));
                         if (!choice.toLowerCase().strip().equals("t")) {
                             break mainLoop;
                         }

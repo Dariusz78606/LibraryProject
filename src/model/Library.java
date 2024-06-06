@@ -63,6 +63,9 @@ public class Library {
         if (borrowedBooks.containsKey(user) && borrowedBooks.get(user).contains(book)) {
             book.setAvailable(true);
             borrowedBooks.get(user).remove(book);
+            if (borrowedBooks.get(user).isEmpty()) {
+                borrowedBooks.remove(user);
+            }
             return book;
         } else {
             return null;

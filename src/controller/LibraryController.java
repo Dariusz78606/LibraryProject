@@ -55,4 +55,8 @@ public class LibraryController {
     public List<Book> getBorrowedBooksByUser(User user) {
         return library.getBorrowedBooksByUser(user);
     }
+
+    public Book returnBook(User user, Book book) {
+        return library.returnBook(user, book);
+    }
 }

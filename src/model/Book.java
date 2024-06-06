@@ -23,9 +23,6 @@ public class Book implements LibraryItem{
         System.out.println(InputOutput.breakLine("Opis:\t\t" +this.description, 60, "\t\t"));
     }
 
-    private String shortDescription(int charsLimit) {
-        return title.substring(0, charsLimit);
-    }
 
     public Book(String title, String author, String description, int pages, String isbn10, String publisher, boolean available) {
         this.title = title;

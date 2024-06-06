@@ -6,7 +6,7 @@ import java.util.Scanner;
 public class InputOutput {
     public static String readLine(String message) {
         Scanner scanner = new Scanner(System.in);
-        System.out.println(message + ": ");
+        System.out.println(message);
         return scanner.nextLine();
     }
 
