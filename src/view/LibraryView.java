@@ -124,7 +124,7 @@ public class LibraryView {
             }
             String bookChoice = InputOutput.readLine("\nKtora ksiazke oddac: ").strip();
             if (!booksMap.containsKey(bookChoice)) {
-                InputOutput.readLine("\n\tNie ma takiej ksiazki... Powrot do menu glownego");
+                InputOutput.readLine("\n\tNie ma takiej ksiazki... Powrot do menu glownego...");
             } else {
                 Book result = controller.returnBook(user, booksMap.get(bookChoice));
                 if (result != null) {
