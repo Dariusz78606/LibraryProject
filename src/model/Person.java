@@ -4,6 +4,9 @@ public abstract class Person {
     protected String username;
 
     public Person(String username) {
+        if (username.isBlank()){
+            this.username = "empty";
+        }
         this.username = username;
     }
 
