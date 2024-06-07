@@ -59,4 +59,12 @@ public class LibraryController {
     public Book returnBook(User user, Book book) {
         return library.returnBook(user, book);
     }
+
+    public List<User> getUsers() {
+        return library.getUsers();
+    }
+
+    public User deleteUser(User user) {
+        return library.deleteUser(user);
+    }
 }

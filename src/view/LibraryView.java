@@ -51,13 +51,13 @@ public class LibraryView {
                     showBooks(controller.getAllBooks(), "Lista wszystkich tytulow:");
                     break;
                 case "2":
-                    previewAllBooks(false);
+                    previewBooks(controller.getAllBooks(),false);
                     break;
                 case "3":
                     showBooks(controller.getAvailableBooks(), "Lista dostepnych tytulow:");
                     break;
                 case "4":
-                    previewAllBooks(true);
+                    previewBooks(controller.getAvailableBooks(), true);
                 case "5":
                     break;
                 case "6":
@@ -67,6 +67,7 @@ public class LibraryView {
                     returnBook();
                     break;
                 case "8":
+                    deleteUser();
                     break;
             }
         }
@@ -127,10 +128,10 @@ public class LibraryView {
             } else {
                 Book result = controller.returnBook(user, booksMap.get(bookChoice));
                 if (result != null) {
-                    InputOutput.readLine("Oddano pomyslnie");
+                    InputOutput.readLine("\tOddano pomyslnie");
                 }
                 else {
-                    InputOutput.readLine("Wystapil blad");
+                    InputOutput.readLine("\tWystapil blad");
                 }
             }
         } else {
@@ -141,7 +142,7 @@ public class LibraryView {
     public void previewBorrowed() {
         InputOutput.printMoreLines(BLANKLINES);
         if (controller.getBorrowedBooks().isEmpty()) {
-            System.out.println("Brak wypozyczonych ksiazek");
+            InputOutput.readLine("\tBrak wypozyczonych ksiazek");
             return;
         }
         System.out.println(InputOutput.breakLine("\nUzytkownicy i ich wypozyczone ksiazki" ,60, "\t\t"));
@@ -159,16 +160,26 @@ public class LibraryView {
         InputOutput.readLine("\nWcisnij enter by wrocic do menu glownego...");
     }
 
-    public void previewAllBooks(boolean borrow) {
+    public void deleteUser() {
+        InputOutput.printMoreLines(BLANKLINES);
+        System.out.println("\n\tUzytkownicy:\n");
+        for (User user: controller.getUsers()) {
+            System.out.println("\t\t" + user.getUsername());
+        }
+        String choice = InputOutput.readLine("\nPodaj uzytkownika: ");
+        User user = controller.getUserByUsername(choice);
+        if (user != null) {
+            controller.deleteUser(user);
+            InputOutput.readLine("\n\tUsunieto pomyslnie");
+        } else {
+            InputOutput.readLine("\n\tBrak uzytkownika w bazie");
+        }
+    }
+
+    public void previewBooks(List<Book> books, boolean borrow) {
         String choice;
         String name;
         User user = null;
-        List<Book> books;
-        if (borrow) {
-            books = controller.getAvailableBooks();
-        } else {
-            books = controller.getAllBooks();
-        }
         InputOutput.printMoreLines(BLANKLINES);
         System.out.println("\n\tPrzeglad wszystkich tytulow:\n");
         mainLoop:

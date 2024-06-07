@@ -44,6 +44,7 @@ public class Library {
                 book.setAvailable(true);
             }
             borrowedBooks.remove(user);
+            users.remove(user);
             return user;
         }
         return null;
