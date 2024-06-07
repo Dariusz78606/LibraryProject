@@ -58,7 +58,9 @@ public class LibraryView {
                     break;
                 case "4":
                     previewBooks(controller.getAvailableBooks(), true);
-                case "5":
+                    break;
+                    case "5":
+                    searchAndBorrow();
                     break;
                 case "6":
                     previewBorrowed();
@@ -103,7 +105,7 @@ public class LibraryView {
         Map<String, Book> booksMap = new HashMap<>();
         InputOutput.printMoreLines(BLANKLINES);
         if (controller.getBorrowedBooks().isEmpty()) {
-            InputOutput.readLine("\n\tBrak uzytkownikow...");
+            InputOutput.readLine("\n\tBrak wypozyczonych ksiazek. Powrot do menu...");
             return;
         }
         System.out.println(InputOutput.breakLine("\nKtory uzytkownik ma oddac ksiazke(podaj pelna nazwe):\n" ,60, "\t"));
@@ -162,6 +164,10 @@ public class LibraryView {
 
     public void deleteUser() {
         InputOutput.printMoreLines(BLANKLINES);
+        if (controller.getUsers().isEmpty()) {
+            InputOutput.readLine("Brak uzytkownikow. Powrot do menu...");
+            return;
+        }
         System.out.println("\n\tUzytkownicy:\n");
         for (User user: controller.getUsers()) {
             System.out.println("\t\t" + user.getUsername());
@@ -173,6 +179,43 @@ public class LibraryView {
             InputOutput.readLine("\n\tUsunieto pomyslnie");
         } else {
             InputOutput.readLine("\n\tBrak uzytkownika w bazie");
+        }
+    }
+
+    public void searchAndBorrow() {
+        InputOutput.printMoreLines(BLANKLINES);
+        String choice;
+        List<Book> books;
+        System.out.println("\n\tWedlug czego wyszukac:\n");
+        System.out.println("\n\t\t1)\tAutor");
+        System.out.println("\n\t\t2)\tTytul");
+        choice = InputOutput.readLine("\n\tPodaj numer opcji: ").strip();
+        switch (choice) {
+            case "1":
+                choice = InputOutput.readLine("\n\tPodaj autora: ");
+                String finalChoice = choice;
+                books = controller.getAvailableBooks().stream()
+                        .filter(book -> book.getAuthor().toLowerCase().contains(finalChoice)).toList();
+                if (books.isEmpty()) {
+                    InputOutput.readLine("\n\tBrak pasujacych wynikow. Wracam do menu");
+                    return;
+                }
+                previewBooks(books, true);
+                break;
+            case "2":
+                choice = InputOutput.readLine("\n\tPodaj tytul: ");
+                String finalChoice1 = choice;
+                books = controller.getAvailableBooks().stream()
+                        .filter(book -> book.getTitle().toLowerCase().contains(finalChoice1)).toList();
+                if (books.isEmpty()) {
+                    InputOutput.readLine("\n\tBrak pasujacych wynikow. Wracam do menu");
+                    return;
+                }
+                previewBooks(books, true);
+                break;
+            default:
+                System.out.printf("\nNie ma takiej opcji. Powrot do menu");
+                return;
         }
     }
 

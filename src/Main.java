@@ -8,7 +8,7 @@ public class Main {
         Library library = Library.getInstance();
         LibraryView libraryView = LibraryView.getInstance();
 
-        Books.getStartupBooks().stream()
+        Books.getStartupBooks()
                 .forEach(library::addBook);
 
         libraryView.mainMenu();
